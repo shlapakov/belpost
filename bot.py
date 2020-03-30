@@ -2,6 +2,7 @@ import telebot
 import bs4
 import urllib.request
 import os
+import logging
 from dotenv import load_dotenv
 from urllib.parse import quote
 
@@ -9,10 +10,12 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
 
 def get_info(track):
     track = track.replace(" ", "")
-    print(f'i have track — {track}')
+    logging.info(f'i have track — {track}')
     site = urllib.request.urlopen(f'https://webservices.belpost.by/searchRu/{quote(track)}').read().decode('utf-8')
     soup = bs4.BeautifulSoup(site, features='html.parser')
     if 'По данному отправлению' in site:
@@ -38,7 +41,7 @@ def command_hello(message):
 
 @bot.message_handler()
 def get_track(message):
-    print('hi')
+    logging.info('Checking track')
     bot.reply_to(message, get_info(message.text))
 
 
